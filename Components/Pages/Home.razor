@@ -1,0 +1,32 @@
+﻿@using PizzaTime.Models
+@inject PizzaTimer timer
+@page "/"
+
+<h1> Pizza Time!</h1>
+<h3> Pizzas gemacht: @pizzaCount</h3>
+
+<MudImage Src="pizza_432339.png" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
+<h3>Timer</h3>
+<MudTextField T="string" @bind-Text="timer.ElapsedTime" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+
+<MudStack Row="true" AlignItems="AlignItems.Start">
+	<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" OnClick="StartStop" Color="Color.Primary">Delete</MudButton>
+	<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Stop" Color="Color.Error">Delete</MudButton>
+</MudStack>
+
+@code
+{
+	int pizzaCount { get; set; } = 0;
+
+	void StartStop()
+	{
+		if (timer.IsRunning)
+		{
+			timer.StopCommand.Execute(null);
+		}
+		else
+		{
+			timer.StartCommand.Execute(null);			
+		}
+	}
+}

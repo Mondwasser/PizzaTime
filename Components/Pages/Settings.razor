@@ -1,0 +1,24 @@
+﻿@using PizzaTime.Models 
+
+@page "/settings"
+
+<h1>Settings</h1>
+
+<h4>Alle Werte in Sekunden</h4>
+<MudStack Row="true" AlignItems="AlignItems.Start">
+    <h4> Erster Timer</h4>
+    <MudNumericField T="int" Value="@TimerSettings.FirstTimer" Underline="false" Variant="Variant.Text" Min="0" />
+</MudStack>
+<MudStack Row="true" AlignItems="AlignItems.Start">
+    <h4> Zweiter Timer</h4>
+    <MudNumericField T="int" Value="@TimerSettings.SecondTimer" Underline="false" Variant="Variant.Text" Min="0" />
+</MudStack>
+<MudStack Row="true" AlignItems="AlignItems.Start">
+    <h4> Dritter Timer</h4>
+    <MudNumericField T="int" Value="@TimerSettings.ThirdTimer" Underline="false" Variant="Variant.Text" Min="0" />
+</MudStack>
+<MudStack Row="true" AlignItems="AlignItems.Start">
+    <h4> Vierter Timer</h4>
+    <MudNumericField T="int" Value="@TimerSettings.FourthTimer" Underline="false" Variant="Variant.Text" Min="0" />
+</MudStack>
+
