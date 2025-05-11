@@ -6,34 +6,54 @@
 
 @page "/"
 
+
+<MudStack Spacing="5" AlignItems="AlignItems.Center">
 <h1> Pizza Time!</h1>
 <h3> Pizzas gemacht: @TimerSettings.NumberOfPizzas</h3>
 <h3> Aktuelle Phase: @TimerSettings.CurrentPhase</h3>
+</MudStack>
 
 @if (isPhaseCurrentlyDone)
 {
 	<MudImage Src="fire.gif" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
 	<br />
-	<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.NotStarted" OnClick="NextPhase" Color="Color.Primary"></MudIconButton>
+	<MudStack AlignItems="AlignItems.Center">
+		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.NotStarted" OnClick="NextPhase" Color="Color.Primary" Style="width: 150px; height: 60px;"></MudIconButton>
+	</MudStack>
 }
 else
 {
-	<MudImage Src="pizza_432339.png" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
-	<h3>Timer</h3>
-	<MudTextField T="string" @bind-Text="timer.ElapsedTime" ReadOnly="true" Variant="Variant.Text" Underline="false" />
-
-	<MudStack Row="true" AlignItems="AlignItems.Start">
-		<MudIconButton  Variant="Variant.Filled" Icon="@playIcon" OnClick="StartPause" Color="Color.Primary"></MudIconButton>
-		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Stop" OnClick="Stop" Color="Color.Error"></MudIconButton>
+	<MudStack AlignItems="AlignItems.Center">
+		<MudImage Src="pizza_432339.png" Width="300" Height="300" Alt="Pizza" Elevation="25" Class="rounded-lg" />
+		
+		<MudTextField T="string" @bind-Text="timer.ElapsedTime" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+			</MudStack>
+	<MudStack Row="true" Spacing="5" AlignItems="AlignItems.Center">
+		<MudIconButton Variant="Variant.Filled" Icon="@playIcon" OnClick="StartPause" Color="Color.Primary" Style="width: 150px; height: 60px;"></MudIconButton>
+		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Stop" OnClick="Stop" Disabled="isNotRunning" Color="Color.Error" Style="width: 150px; height: 60px;"></MudIconButton>
 	</MudStack>
 }
-
 
 @code
 {
 	private bool isPhaseCurrentlyDone = false;
 
-	private string playIcon = Icons.Material.Filled.PlayArrow;
+	private string playIcon
+	{
+		get
+		{
+			if (timer.IsRunning)
+			{
+				return Icons.Material.Filled.Pause;
+			}
+			else
+			{
+				return Icons.Material.Filled.PlayArrow;
+			}
+		}
+	}
+
+	private bool isNotRunning = true;
 
 	void NextPhase()
 	{
@@ -44,6 +64,7 @@ else
 		{
 			TimerSettings.CurrentPhase++;
 			timer.StartCommand.Execute(null);
+			isNotRunning = false;
 		}
 		else
 		{
@@ -52,7 +73,6 @@ else
 		}
 
 		timer.PhaseTime = TimerSettings.GetCurrentPhaseTime();
-		playIcon = Icons.Material.Filled.Pause;
 
 		StateHasChanged();
 	}
@@ -62,12 +82,11 @@ else
 		if (timer.IsRunning)
 		{
 			timer.PauseCommand.Execute(null);
-			playIcon = Icons.Material.Filled.PlayArrow;
 		}
 		else
 		{
 			timer.StartCommand.Execute(null);
-			playIcon = Icons.Material.Filled.Pause;
+			isNotRunning = false;
 		}
 
 		StateHasChanged();
@@ -76,7 +95,7 @@ else
 	void Stop()
 	{
 		timer.StopCommand.Execute(null);
-		playIcon = Icons.Material.Filled.PlayArrow;
+		isNotRunning = true;
 		StateHasChanged();
 	}
 

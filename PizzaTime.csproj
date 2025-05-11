@@ -46,7 +46,6 @@
         <!-- App Icon -->
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
         <!-- Images -->
         <MauiImage Include="Resources\Images\*" />
@@ -61,6 +60,11 @@
 
     <ItemGroup>
       <Content Remove="wwwroot\tarantella-napoletana-164475.mp3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Splash\splash.png" />
+      <None Remove="Resources\Splash\splash.svg" />
     </ItemGroup>
 
     <ItemGroup>
@@ -96,6 +100,12 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
       </MauiAsset>
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiSplashScreen Include="Resources\Splash\splash.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </MauiSplashScreen>
     </ItemGroup>
 
     <ItemGroup>
