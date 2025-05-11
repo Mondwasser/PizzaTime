@@ -1,32 +1,95 @@
 ﻿@using PizzaTime.Models
+@using Plugin.Maui.Audio
+
 @inject PizzaTimer timer
+@inject PizzaMediaPlayer player
+
 @page "/"
 
 <h1> Pizza Time!</h1>
-<h3> Pizzas gemacht: @pizzaCount</h3>
+<h3> Pizzas gemacht: @TimerSettings.NumberOfPizzas</h3>
+<h3> Aktuelle Phase: @TimerSettings.CurrentPhase</h3>
 
-<MudImage Src="pizza_432339.png" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
-<h3>Timer</h3>
-<MudTextField T="string" @bind-Text="timer.ElapsedTime" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+@if (isPhaseCurrentlyDone)
+{
+	<MudImage Src="fire.gif" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
+	<br />
+	<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" OnClick="NextPhase" Color="Color.Primary"></MudButton>
+}
+else
+{
+	<MudImage Src="pizza_432339.png" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
+	<h3>Timer</h3>
+	<MudTextField T="string" @bind-Text="timer.ElapsedTime" ReadOnly="true" Variant="Variant.Text" Underline="false" />
 
-<MudStack Row="true" AlignItems="AlignItems.Start">
-	<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" OnClick="StartStop" Color="Color.Primary">Delete</MudButton>
-	<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Stop" Color="Color.Error">Delete</MudButton>
-</MudStack>
+	<MudStack Row="true" AlignItems="AlignItems.Start">
+		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" OnClick="StartPause" Color="Color.Primary"></MudButton>
+		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Stop" OnClick="Stop" Color="Color.Error"></MudButton>
+	</MudStack>
+}
+
 
 @code
 {
-	int pizzaCount { get; set; } = 0;
+	private bool isPhaseCurrentlyDone = false;
 
-	void StartStop()
+	void NextPhase()
+	{
+		player.Stop();
+		isPhaseCurrentlyDone = false;
+
+		if (TimerSettings.CurrentPhase <= 3)
+		{
+			TimerSettings.CurrentPhase++;
+			timer.StartCommand.Execute(null);
+		}
+		else
+		{
+			TimerSettings.CurrentPhase = 1;
+			TimerSettings.NumberOfPizzas++;
+		}
+
+		timer.PhaseTime = TimerSettings.GetCurrentPhaseTime();
+		StateHasChanged();
+	}
+
+	void StartPause()
 	{
 		if (timer.IsRunning)
 		{
-			timer.StopCommand.Execute(null);
+			timer.PauseCommand.Execute(null);
 		}
 		else
 		{
 			timer.StartCommand.Execute(null);			
 		}
+	}
+
+	void Stop()
+	{
+		timer.StopCommand.Execute(null);
+	}
+
+	private void OnNewTimestamp()
+	{
+		StateHasChanged();
+	}
+
+	private void OnPhaseDone()
+	{
+		player.Play();
+		isPhaseCurrentlyDone = true;
+
+		StateHasChanged();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		timer.PhaseTime = TimerSettings.GetCurrentPhaseTime();
+		timer.newTimeStamp += OnNewTimestamp;
+		timer.phaseDone += OnPhaseDone;
+
+		StateHasChanged();
 	}
 }

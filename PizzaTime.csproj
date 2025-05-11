@@ -60,11 +60,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
+      <Content Remove="wwwroot\tarantella-napoletana-164475.mp3" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.60" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.60" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.4" />
         <PackageReference Include="MudBlazor" Version="8.6.0" />
+        <PackageReference Include="Plugin.Maui.Audio" Version="3.1.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -85,6 +89,19 @@
 
     <ItemGroup>
       <Folder Include="Resources\Images\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiAsset Include="wwwroot\tarantella-napoletana-164475.mp3">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+      </MauiAsset>
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiAsset Update="Resources\Raw\tarantella-napoletana-164475.mp3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiAsset>
     </ItemGroup>
 
 </Project>

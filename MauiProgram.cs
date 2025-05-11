@@ -1,7 +1,7 @@
-﻿using CommunityToolkit.Maui;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 using PizzaTime.Models;
+using Plugin.Maui.Audio;
 
 namespace PizzaTime
 {
@@ -12,7 +12,6 @@ namespace PizzaTime
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -21,7 +20,7 @@ namespace PizzaTime
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddMudServices();
             builder.Services.AddSingleton<PizzaTimer>();
-
+            builder.Services.AddSingleton<PizzaMediaPlayer>();
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();

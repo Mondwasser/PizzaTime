@@ -1,5 +1,4 @@
-﻿using PizzaTime.ViewModels;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows.Input;
 
 namespace PizzaTime.Models
@@ -21,34 +20,35 @@ namespace PizzaTime.Models
 
         public bool IsRunning = false;
 
-        public string ElapsedTime;
+        private string _elapsedTime;
+        public string ElapsedTime
+        { 
+            get => _elapsedTime;
+            set
+            {
+                _elapsedTime = value;
+                newTimeStamp?.Invoke();
+            }
+        }
 
-        /// <summary>
-        /// Called when object was changed in any way
-        /// </summary>
+        public int PhaseTime = TimerSettings.GetCurrentPhaseTime();
+
         public event Action? newTimeStamp;
+
+        public event Action? phaseDone;
 
         public ICommand StartCommand { get; }
         public ICommand StopCommand { get; }
-        public ICommand ClearCommand { get; }
-
-        private string FormatElapsedTime(TimeSpan timeSpan)
-        {
-            return timeSpan.ToString(@"ss");
-        }
+        public ICommand PauseCommand { get; }
 
         private void Start()
         {
-            _timer.Restart();
-
+            _timer.Start();
             IsRunning = true;
 
-            Device.StartTimer(TimeSpan.FromMilliseconds(1000), () =>
+            Device.StartTimer(TimeSpan.FromMilliseconds(200), () =>
             {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    ElapsedTime = FormatElapsedTime(_timer.Elapsed);
-                });
+                OnTimerCheck();
                 return IsRunning;
             });
         }
@@ -56,22 +56,42 @@ namespace PizzaTime.Models
         private void Stop()
         {
             _timer.Stop();
+            _timer.Reset();
+            ElapsedTime = PhaseTime.ToString();
             IsRunning = false;
         }
 
-        private void Clear()
+        private void Pause()
         {
-            ElapsedTime = "00:00";
+            _timer.Stop();
+            IsRunning = false;
+        }
+
+        private void OnTimerCheck()
+        {
+            int remainingTime = PhaseTime - _timer.Elapsed.Seconds;
+            if (remainingTime <= 0)
+            {
+                _timer.Stop();
+                _timer.Reset();
+                ElapsedTime = "0";
+                IsRunning = false;
+                phaseDone?.Invoke();
+            }
+            else
+            {
+                ElapsedTime = remainingTime.ToString();
+            }
         }
 
         public PizzaTimer()
         {
             _timer = new Stopwatch();
-            ElapsedTime = "00:00";
+            ElapsedTime = PhaseTime.ToString();
             IsRunning = false;
             StartCommand = new Command(() => Start());
             StopCommand = new Command(() => Stop());
-            ClearCommand = new Command(() => Clear());
+            PauseCommand = new Command(() => Pause());
         }
     }
 }

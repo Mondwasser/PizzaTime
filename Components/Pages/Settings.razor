@@ -1,24 +1,43 @@
 ﻿@using PizzaTime.Models 
 
+@inject PizzaTimer timer
+@inject PizzaMediaPlayer player
+
 @page "/settings"
 
 <h1>Settings</h1>
 
+<MudSlider Value="@player.Volume" T="double" Min="0.0" Max="100.0" ValueChanged="@((double value) => OnVolumeChange(value))">Lautstärke</MudSlider>
+
+
 <h4>Alle Werte in Sekunden</h4>
 <MudStack Row="true" AlignItems="AlignItems.Start">
-    <h4> Erster Timer</h4>
-    <MudNumericField T="int" Value="@TimerSettings.FirstTimer" Underline="false" Variant="Variant.Text" Min="0" />
+	<h4> Erster Timer</h4>
+	<MudNumericField T="int" @bind-Value="TimerSettings.FirstTimer" Underline="false" Variant="Variant.Text" Min="0" />
 </MudStack>
 <MudStack Row="true" AlignItems="AlignItems.Start">
-    <h4> Zweiter Timer</h4>
-    <MudNumericField T="int" Value="@TimerSettings.SecondTimer" Underline="false" Variant="Variant.Text" Min="0" />
+	<h4> Zweiter Timer</h4>
+	<MudNumericField T="int" @bind-Value="TimerSettings.SecondTimer" Underline="false" Variant="Variant.Text" Min="0" />
 </MudStack>
 <MudStack Row="true" AlignItems="AlignItems.Start">
-    <h4> Dritter Timer</h4>
-    <MudNumericField T="int" Value="@TimerSettings.ThirdTimer" Underline="false" Variant="Variant.Text" Min="0" />
+	<h4> Dritter Timer</h4>
+	<MudNumericField T="int" @bind-Value="TimerSettings.ThirdTimer" Underline="false" Variant="Variant.Text" Min="0" />
 </MudStack>
 <MudStack Row="true" AlignItems="AlignItems.Start">
-    <h4> Vierter Timer</h4>
-    <MudNumericField T="int" Value="@TimerSettings.FourthTimer" Underline="false" Variant="Variant.Text" Min="0" />
+	<h4> Vierter Timer</h4>
+	<MudNumericField T="int" @bind-Value="TimerSettings.FourthTimer" Underline="false" Variant="Variant.Text" Min="0" />
 </MudStack>
 
+@code
+{
+	private void OnVolumeChange(double value)
+	{
+		player.Volume = value;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		timer.StopCommand.Execute(null);
+	}
+}
