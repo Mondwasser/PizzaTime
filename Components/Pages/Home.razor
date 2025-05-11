@@ -14,7 +14,7 @@
 {
 	<MudImage Src="fire.gif" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
 	<br />
-	<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" OnClick="NextPhase" Color="Color.Primary"></MudButton>
+	<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.NotStarted" OnClick="NextPhase" Color="Color.Primary"></MudIconButton>
 }
 else
 {
@@ -23,8 +23,8 @@ else
 	<MudTextField T="string" @bind-Text="timer.ElapsedTime" ReadOnly="true" Variant="Variant.Text" Underline="false" />
 
 	<MudStack Row="true" AlignItems="AlignItems.Start">
-		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" OnClick="StartPause" Color="Color.Primary"></MudButton>
-		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Stop" OnClick="Stop" Color="Color.Error"></MudButton>
+		<MudIconButton  Variant="Variant.Filled" Icon="@playIcon" OnClick="StartPause" Color="Color.Primary"></MudIconButton>
+		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Stop" OnClick="Stop" Color="Color.Error"></MudIconButton>
 	</MudStack>
 }
 
@@ -32,6 +32,8 @@ else
 @code
 {
 	private bool isPhaseCurrentlyDone = false;
+
+	private string playIcon = Icons.Material.Filled.PlayArrow;
 
 	void NextPhase()
 	{
@@ -50,6 +52,8 @@ else
 		}
 
 		timer.PhaseTime = TimerSettings.GetCurrentPhaseTime();
+		playIcon = Icons.Material.Filled.Pause;
+
 		StateHasChanged();
 	}
 
@@ -58,16 +62,22 @@ else
 		if (timer.IsRunning)
 		{
 			timer.PauseCommand.Execute(null);
+			playIcon = Icons.Material.Filled.PlayArrow;
 		}
 		else
 		{
-			timer.StartCommand.Execute(null);			
+			timer.StartCommand.Execute(null);
+			playIcon = Icons.Material.Filled.Pause;
 		}
+
+		StateHasChanged();
 	}
 
 	void Stop()
 	{
 		timer.StopCommand.Execute(null);
+		playIcon = Icons.Material.Filled.PlayArrow;
+		StateHasChanged();
 	}
 
 	private void OnNewTimestamp()

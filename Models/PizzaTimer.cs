@@ -31,7 +31,16 @@ namespace PizzaTime.Models
             }
         }
 
-        public int PhaseTime = TimerSettings.GetCurrentPhaseTime();
+        private int _phaseTime = TimerSettings.GetCurrentPhaseTime();
+        public int PhaseTime
+        {
+            get { return _phaseTime; }
+            set 
+            { 
+                _phaseTime = value;
+                ElapsedTime = value.ToString();
+            }
+        } 
 
         public event Action? newTimeStamp;
 
@@ -57,7 +66,7 @@ namespace PizzaTime.Models
         {
             _timer.Stop();
             _timer.Reset();
-            ElapsedTime = PhaseTime.ToString();
+            ElapsedTime = _phaseTime.ToString();
             IsRunning = false;
         }
 
@@ -69,7 +78,7 @@ namespace PizzaTime.Models
 
         private void OnTimerCheck()
         {
-            int remainingTime = PhaseTime - _timer.Elapsed.Seconds;
+            int remainingTime = _phaseTime - _timer.Elapsed.Seconds;
             if (remainingTime <= 0)
             {
                 _timer.Stop();
