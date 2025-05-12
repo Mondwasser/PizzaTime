@@ -6,10 +6,9 @@
 
 @page "/"
 
-
 <MudStack Spacing="5" AlignItems="AlignItems.Center">
 	<h1> Pizza Time!</h1>
-	<h3> Pizzas gemacht: @PizzaSettings.NumberOfPizzas</h3>
+	<h3> Pizzas gemacht: @PizzaSettings.CurentNumberOfPizzas</h3>
 	<MudStack Row="true" Spacing="3">
 		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.KeyboardArrowLeft" OnClick="PreviousPhase" Disabled="@isPreviousDisabled"></MudIconButton>
 		<h3> Aktuelle Phase: @timer.CurrentPhase</h3>
@@ -17,10 +16,12 @@
 	</MudStack>
 </MudStack>
 
+<br />
+
 @if (isPhaseCurrentlyDone)
 {
 	<MudStack AlignItems="AlignItems.Center">
-		<MudImage Src="fire.gif" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
+		<MudImage Src="fire.gif" Width="300" Height="300" Alt="Pizza" Elevation="25" Class="rounded-lg" />
 	</MudStack>
 	<br />
 	<MudStack AlignItems="AlignItems.Center">
@@ -47,7 +48,7 @@ else
 	{
 		get
 		{
-			return timer.CurrentPhase == 1;
+			return timer.CurrentPhase == 1 && !isPhaseCurrentlyDone;
 		}
 	}
 
@@ -70,33 +71,40 @@ else
 
 	void NextPhase()
 	{
-		timer.StopCommand.Execute(null);
-		isNotRunning = true;
-
-		if (timer.CurrentPhase <= 3)
+		if (isPhaseCurrentlyDone)
 		{
-			timer.CurrentPhase++;
+			PhaseComplete();
 		}
 		else
 		{
-			timer.CurrentPhase = 1;
-			PizzaSettings.NumberOfPizzas++;
-		}
+			timer.StopCommand.Execute(null);
+			isNotRunning = true;
 
-		//StateHasChanged();
+			if (timer.CurrentPhase <= 3)
+			{
+				timer.CurrentPhase++;
+			}
+			else
+			{
+				timer.CurrentPhase = 1;
+				PizzaSettings.CurentNumberOfPizzas++;
+			}
+		}
 	}
 
 	void PreviousPhase()
 	{
 		timer.StopCommand.Execute(null);
 		isNotRunning = true;
+		player.Stop();
+		isPhaseCurrentlyDone = false;
 
 		if (timer.CurrentPhase > 1)
 		{
 			timer.CurrentPhase--;
 		}
 
-		StateHasChanged();
+		timer.SetUp();
 	}
 
 	void PhaseComplete()
@@ -113,10 +121,10 @@ else
 		else
 		{
 			timer.CurrentPhase = 1;
-			PizzaSettings.NumberOfPizzas++;
+			PizzaSettings.CurentNumberOfPizzas++;
 		}
 
-		StateHasChanged();
+		timer.SetUp();
 	}
 
 	void StartPause()
@@ -138,7 +146,7 @@ else
 	{
 		timer.StopCommand.Execute(null);
 		isNotRunning = true;
-		StateHasChanged();
+		timer.SetUp();
 	}
 
 	private void OnNewTimestamp()
@@ -157,6 +165,8 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
+		player.Stop();
+		timer.SetUp();
 		timer.newTimeStamp += OnNewTimestamp;
 		timer.phaseDone += OnPhaseDone;
 

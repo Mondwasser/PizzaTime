@@ -6,6 +6,13 @@ namespace PizzaTime.Models
     {
         private IAudioPlayer trackPlayer;
 
+        public bool IsPlaying 
+        { 
+            get
+            {
+                return trackPlayer.IsPlaying;
+            }
+        }
         public double Volume
         {
             get

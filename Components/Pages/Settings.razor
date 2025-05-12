@@ -6,38 +6,100 @@
 @page "/settings"
 
 <h1>Settings</h1>
+<br />
 
-<MudSlider Value="@player.Volume" T="double" Min="0.0" Max="100.0" ValueChanged="@((double value) => OnVolumeChange(value))">Lautstärke</MudSlider>
+<MudSlider Value="@player.Volume" T="double" Min="0.0" Max="100.0" ValueChanged="@((double value) => OnVolumeChange(value))" Size="Size.Large">Lautstärke</MudSlider>
+
+<br />
+<br />
+
+<MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+	<MudPaper Width="150px" Elevation=0>
+		<MudTextField T="string" Text="@("Pizzas gesamt")" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+	</MudPaper>
+	<MudPaper Width="60px" Elevation=0>
+		<MudNumericField T="int" @bind-Value="PizzaSettings.AllTimeNumberOffPizzas" Underline="false" Disabled="isTotalPizzasDisabled" Variant="Variant.Text" Min="0" Max="999" />
+	</MudPaper>
+	<MudPaper Width="80px" Elevation=0/>
+	<MudIconButton Variant="Variant.Filled" Icon="@lockIcon" OnClick="OnLock"></MudIconButton>
+</MudStack>
+
+<br />
 
 
 <h4>Alle Werte in Sekunden</h4>
-<MudStack Row="true" AlignItems="AlignItems.Start">
-	<h4> Erster Timer</h4>
-	<MudNumericField T="int" @bind-Value="PizzaSettings.FirstTimer" Underline="false" Variant="Variant.Text" Min="0" />
+<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+	<MudPaper Width="100px" Elevation=0>
+		<MudTextField T="string" Text="@("Erster Timer")" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+	</MudPaper>
+	<MudPaper Width="60px" Elevation=0>
+		<MudNumericField T="int" @bind-Value="PizzaSettings.FirstTimer" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
+	</MudPaper>
 </MudStack>
-<MudStack Row="true" AlignItems="AlignItems.Start">
-	<h4> Zweiter Timer</h4>
-	<MudNumericField T="int" @bind-Value="PizzaSettings.FirstTimer" Underline="false" Variant="Variant.Text" Min="0" />
+<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+	<MudPaper Width="100px" Elevation=0>
+		<MudTextField T="string" Text="@("Zweiter Timer")" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+	</MudPaper>
+	<MudPaper Width="60px" Elevation=0>
+		<MudNumericField T="int" @bind-Value="PizzaSettings.SecondTimer" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
+	</MudPaper>
 </MudStack>
-<MudStack Row="true" AlignItems="AlignItems.Start">
-	<h4> Dritter Timer</h4>
-	<MudNumericField T="int" @bind-Value="PizzaSettings.ThirdTimer" Underline="false" Variant="Variant.Text" Min="0" />
+<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+	<MudPaper Width="100px" Elevation=0>
+		<MudTextField T="string" Text="@("Dritter Timer")" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+	</MudPaper>
+	<MudPaper Width="60px" Elevation=0>
+		<MudNumericField T="int" @bind-Value="PizzaSettings.ThirdTimer" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
+	</MudPaper>
 </MudStack>
-<MudStack Row="true" AlignItems="AlignItems.Start">
-	<h4> Vierter Timer</h4>
-	<MudNumericField T="int" @bind-Value="PizzaSettings.FourthTimer" Underline="false" Variant="Variant.Text" Min="0" />
+<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+	<MudPaper Width="100px" Elevation=0>
+		<MudTextField T="string" Text="@("Vierter Timer")" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+	</MudPaper>
+	<MudPaper Width="60px" Elevation=0>
+		<MudNumericField T="int" @bind-Value="PizzaSettings.FourthTimer" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
+	</MudPaper>
 </MudStack>
 
 @code
 {
+	private bool isTotalPizzasDisabled = true;
+
+	private string lockIcon
+	{
+		get
+		{
+			if (isTotalPizzasDisabled)
+			{
+				return Icons.Material.Filled.Lock;
+			}
+			else
+			{
+				return Icons.Material.Filled.LockOpen;
+			}
+		}
+	}
+
+	void OnLock()
+	{
+		isTotalPizzasDisabled = !isTotalPizzasDisabled;
+		StateHasChanged();
+	}
+
 	private void OnVolumeChange(double value)
 	{
 		player.Volume = value;
+
+		if (!player.IsPlaying)
+		{
+			player.Play();
+		}
 	}
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 		timer.StopCommand.Execute(null);
+		player.Stop();
 	}
 }

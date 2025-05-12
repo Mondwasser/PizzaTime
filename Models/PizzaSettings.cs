@@ -2,7 +2,33 @@
 {
     internal static class PizzaSettings
     {
-        public static int NumberOfPizzas { get; set; } = 0;
+        public static int _curentNumberOfPizzas = 0;
+        public static int CurentNumberOfPizzas 
+        { 
+            get
+            {
+                return _curentNumberOfPizzas;
+            }
+            set
+            {
+                AllTimeNumberOffPizzas += value - _curentNumberOfPizzas;
+                _curentNumberOfPizzas = value;
+            }
+        }
+
+        private static int _allTimeNumberOffPizzas = Preferences.Default.Get("AllTimeNumberOffPizzas", 0);
+        public static int AllTimeNumberOffPizzas
+        {
+            get
+            {
+                return _allTimeNumberOffPizzas;
+            }
+            set
+            {
+                Preferences.Default.Set("AllTimeNumberOffPizzas", value);
+                _allTimeNumberOffPizzas = value;
+            }
+        }
 
         private static int _firstTimer = Preferences.Default.Get("FirstTimer", 40);
         public static int FirstTimer
