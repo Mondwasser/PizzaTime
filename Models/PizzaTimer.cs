@@ -7,14 +7,14 @@ namespace PizzaTime.Models
     {
         readonly Stopwatch _timer;
 
-        private TimeSpan _elapsed;
-        public TimeSpan Elapsed
+        private int _currentPhase = 1;
+        public int CurrentPhase
         {
-            get => _elapsed;
-            set 
+            get => _currentPhase;
+            set
             {
-                _elapsed = value;
-                newTimeStamp?.Invoke();
+                _currentPhase = value;
+                ElapsedTime = GetCurrentPhaseTime().ToString();
             }
         }
 
@@ -31,16 +31,7 @@ namespace PizzaTime.Models
             }
         }
 
-        private int _phaseTime = TimerSettings.GetCurrentPhaseTime();
-        public int PhaseTime
-        {
-            get { return _phaseTime; }
-            set 
-            { 
-                _phaseTime = value;
-                ElapsedTime = value.ToString();
-            }
-        } 
+        private int _phaseTime = PizzaSettings.FirstTimer;
 
         public event Action? newTimeStamp;
 
@@ -66,7 +57,6 @@ namespace PizzaTime.Models
         {
             _timer.Stop();
             _timer.Reset();
-            ElapsedTime = _phaseTime.ToString();
             IsRunning = false;
         }
 
@@ -89,18 +79,33 @@ namespace PizzaTime.Models
             }
             else
             {
-                ElapsedTime = remainingTime.ToString();
+                if (IsRunning)
+                {
+                    ElapsedTime = remainingTime.ToString();
+                }
             }
         }
 
         public PizzaTimer()
         {
             _timer = new Stopwatch();
-            ElapsedTime = PhaseTime.ToString();
+            ElapsedTime = _phaseTime.ToString();
             IsRunning = false;
             StartCommand = new Command(() => Start());
             StopCommand = new Command(() => Stop());
             PauseCommand = new Command(() => Pause());
+        }
+
+        public int GetCurrentPhaseTime()
+        {
+            switch (_currentPhase)
+            {
+                case 1: return PizzaSettings.FirstTimer;
+                case 2: return PizzaSettings.SecondTimer;
+                case 3: return PizzaSettings.ThirdTimer;
+                case 4: return PizzaSettings.FourthTimer;
+                default: return -1;
+            }
         }
     }
 }

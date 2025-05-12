@@ -1,9 +1,7 @@
 ﻿namespace PizzaTime.Models
 {
-    internal static class TimerSettings
+    internal static class PizzaSettings
     {
-        public static int CurrentPhase = 1;
-
         public static int NumberOfPizzas { get; set; } = 0;
 
         private static int _firstTimer = Preferences.Default.Get("FirstTimer", 40);
@@ -60,18 +58,6 @@
                 Preferences.Default.Set("FourthTimer", value);
                 _fourthTimer = value;
             }
-        }
-
-        public static int GetCurrentPhaseTime()
-        {
-            switch (CurrentPhase)
-            {
-                case 1: return FirstTimer;
-                case 2: return SecondTimer;
-                case 3: return ThirdTimer;
-                case 4: return FourthTimer;
-                default: return -1;
-            }
-        }
+        }        
     }
 }

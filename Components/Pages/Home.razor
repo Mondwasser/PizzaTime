@@ -8,27 +8,32 @@
 
 
 <MudStack Spacing="5" AlignItems="AlignItems.Center">
-<h1> Pizza Time!</h1>
-<h3> Pizzas gemacht: @TimerSettings.NumberOfPizzas</h3>
-<h3> Aktuelle Phase: @TimerSettings.CurrentPhase</h3>
+	<h1> Pizza Time!</h1>
+	<h3> Pizzas gemacht: @PizzaSettings.NumberOfPizzas</h3>
+	<MudStack Row="true" Spacing="3">
+		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.KeyboardArrowLeft" OnClick="PreviousPhase" Disabled="@isPreviousDisabled"></MudIconButton>
+		<h3> Aktuelle Phase: @timer.CurrentPhase</h3>
+		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.KeyboardArrowRight" OnClick="NextPhase"></MudIconButton>
+	</MudStack>
 </MudStack>
 
 @if (isPhaseCurrentlyDone)
 {
-	<MudImage Src="fire.gif" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
+	<MudStack AlignItems="AlignItems.Center">
+		<MudImage Src="fire.gif" Width="150" Height="150" Alt="Pizza" Elevation="25" Class="rounded-lg" />
+	</MudStack>
 	<br />
 	<MudStack AlignItems="AlignItems.Center">
-		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.NotStarted" OnClick="NextPhase" Color="Color.Primary" Style="width: 150px; height: 60px;"></MudIconButton>
+		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.NotStarted" OnClick="PhaseComplete" Color="Color.Primary" Style="width: 150px; height: 60px;"></MudIconButton>
 	</MudStack>
 }
 else
 {
-	<MudStack AlignItems="AlignItems.Center">
+	<MudStack AlignItems="AlignItems.Center" Justify="Justify.Center">
 		<MudImage Src="pizza_432339.png" Width="300" Height="300" Alt="Pizza" Elevation="25" Class="rounded-lg" />
-		
-		<MudTextField T="string" @bind-Text="timer.ElapsedTime" ReadOnly="true" Variant="Variant.Text" Underline="false" />
-			</MudStack>
-	<MudStack Row="true" Spacing="5" AlignItems="AlignItems.Center">
+		<h1 Style="font-size:400%">@timer.ElapsedTime</h1>
+	</MudStack>
+	<MudStack Row="true" Spacing="5" Justify="Justify.Center" AlignItems="AlignItems.Center">
 		<MudIconButton Variant="Variant.Filled" Icon="@playIcon" OnClick="StartPause" Color="Color.Primary" Style="width: 150px; height: 60px;"></MudIconButton>
 		<MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Stop" OnClick="Stop" Disabled="isNotRunning" Color="Color.Error" Style="width: 150px; height: 60px;"></MudIconButton>
 	</MudStack>
@@ -37,6 +42,14 @@ else
 @code
 {
 	private bool isPhaseCurrentlyDone = false;
+
+	private bool isPreviousDisabled
+	{
+		get
+		{
+			return timer.CurrentPhase == 1;
+		}
+	}
 
 	private string playIcon
 	{
@@ -57,22 +70,51 @@ else
 
 	void NextPhase()
 	{
+		timer.StopCommand.Execute(null);
+		isNotRunning = true;
+
+		if (timer.CurrentPhase <= 3)
+		{
+			timer.CurrentPhase++;
+		}
+		else
+		{
+			timer.CurrentPhase = 1;
+			PizzaSettings.NumberOfPizzas++;
+		}
+
+		//StateHasChanged();
+	}
+
+	void PreviousPhase()
+	{
+		timer.StopCommand.Execute(null);
+		isNotRunning = true;
+
+		if (timer.CurrentPhase > 1)
+		{
+			timer.CurrentPhase--;
+		}
+
+		StateHasChanged();
+	}
+
+	void PhaseComplete()
+	{
 		player.Stop();
 		isPhaseCurrentlyDone = false;
 
-		if (TimerSettings.CurrentPhase <= 3)
+		if (timer.CurrentPhase <= 3)
 		{
-			TimerSettings.CurrentPhase++;
+			timer.CurrentPhase++;
 			timer.StartCommand.Execute(null);
 			isNotRunning = false;
 		}
 		else
 		{
-			TimerSettings.CurrentPhase = 1;
-			TimerSettings.NumberOfPizzas++;
+			timer.CurrentPhase = 1;
+			PizzaSettings.NumberOfPizzas++;
 		}
-
-		timer.PhaseTime = TimerSettings.GetCurrentPhaseTime();
 
 		StateHasChanged();
 	}
@@ -115,7 +157,6 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
-		timer.PhaseTime = TimerSettings.GetCurrentPhaseTime();
 		timer.newTimeStamp += OnNewTimestamp;
 		timer.phaseDone += OnPhaseDone;
 
