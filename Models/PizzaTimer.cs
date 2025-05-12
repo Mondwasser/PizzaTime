@@ -110,7 +110,8 @@ namespace PizzaTime.Models
 
         public void SetUp()
         {
-            ElapsedTime = GetCurrentPhaseTime().ToString();
+            _phaseTime = GetCurrentPhaseTime();
+            ElapsedTime = _phaseTime.ToString();
         }
     }
 }
