@@ -28,7 +28,7 @@
         <ApplicationId>com.companyname.pizzatime</ApplicationId>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
 
         <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
@@ -42,10 +42,10 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
         <Title>Pizza Time</Title>
         <Authors>Dennis Steinfeld</Authors>
-        <AssemblyVersion>1.0</AssemblyVersion>
+        <AssemblyVersion>1.1</AssemblyVersion>
         <Description>App to ensure a good pizza is made</Description>
         <PackageIcon>appicon.png</PackageIcon>
-        <FileVersion>1.0</FileVersion>
+        <FileVersion>1.1</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
@@ -107,11 +107,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.60" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.60" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.4" />
-        <PackageReference Include="MudBlazor" Version="8.6.0" />
-        <PackageReference Include="Plugin.Maui.Audio" Version="3.1.1" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.70" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.70" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
+        <PackageReference Include="MudBlazor" Version="8.7.0" />
+        <PackageReference Include="Plugin.Maui.Audio" Version="4.0.0" />
     </ItemGroup>
 
     <ItemGroup>

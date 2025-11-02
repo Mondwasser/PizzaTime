@@ -68,7 +68,7 @@ namespace PizzaTime.Models
 
         private void OnTimerCheck()
         {
-            int remainingTime = _phaseTime - _timer.Elapsed.Seconds;
+            int remainingTime = _phaseTime - (int)Math.Round(_timer.Elapsed.TotalSeconds);
             if (remainingTime <= 0)
             {
                 _timer.Stop();
