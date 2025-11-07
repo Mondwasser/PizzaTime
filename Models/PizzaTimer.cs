@@ -107,7 +107,6 @@ namespace PizzaTime.Models
                 default: return -1;
             }
         }
-
         public void SetUp()
         {
             _phaseTime = GetCurrentPhaseTime();

@@ -21,6 +21,7 @@ namespace PizzaTime
             builder.Services.AddMudServices();
             builder.Services.AddSingleton<PizzaTimer>();
             builder.Services.AddSingleton<PizzaMediaPlayer>();
+            builder.Services.AddSingleton<PizzaMediaManager>();
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
