@@ -2,6 +2,23 @@
 {
     internal static class PizzaSettings
     {
+        private static int _numberOfPhases = Preferences.Default.Get("NumberOfPhases", 4);
+        public static int NumberOfPhases
+        {
+            get
+            {
+                return _numberOfPhases;
+            }
+            set
+            {
+                if (_numberOfPhases != value && _numberOfPhases <= 4 && _numberOfPhases >= 1)
+                {
+                    Preferences.Default.Set("NumberOfPhases", value);
+                    _numberOfPhases = value;
+                }
+            }
+        }
+
         public static int _curentNumberOfPizzas = 0;
         public static int CurentNumberOfPizzas 
         { 

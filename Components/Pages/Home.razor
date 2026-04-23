@@ -80,7 +80,7 @@ else
 			timer.StopCommand.Execute(null);
 			isNotRunning = true;
 
-			if (timer.CurrentPhase <= 3)
+			if (timer.CurrentPhase < PizzaSettings.NumberOfPhases)
 			{
 				timer.CurrentPhase++;
 			}
@@ -112,7 +112,7 @@ else
 		player.Stop();
 		isPhaseCurrentlyDone = false;
 
-		if (timer.CurrentPhase <= 3)
+		if (timer.CurrentPhase < PizzaSettings.NumberOfPhases)
 		{
 			timer.CurrentPhase++;
 			timer.StartCommand.Execute(null);
