@@ -42,43 +42,51 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
         <Title>Pizza Time</Title>
         <Authors>Dennis Steinfeld</Authors>
-        <AssemblyVersion>1.1</AssemblyVersion>
+        <AssemblyVersion>1.2</AssemblyVersion>
         <Description>App to ensure a good pizza is made</Description>
         <PackageIcon>appicon.png</PackageIcon>
-        <FileVersion>1.1</FileVersion>
+        <FileVersion>1.2</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
       <ApplicationId>de.RabenCode.pizzatime</ApplicationId>
+      <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
       <ApplicationId>de.RabenCode.pizzatime</ApplicationId>
+      <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-maccatalyst|AnyCPU'">
       <ApplicationId>de.RabenCode.pizzatime</ApplicationId>
+      <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-windows10.0.19041.0|AnyCPU'">
       <ApplicationId>de.RabenCode.pizzatime</ApplicationId>
+      <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
       <ApplicationId>de.RabenCode.pizzatime</ApplicationId>
       <AndroidPackageFormat>apk</AndroidPackageFormat>
+      <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
       <ApplicationId>de.RabenCode.pizzatime</ApplicationId>
+      <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-maccatalyst|AnyCPU'">
       <ApplicationId>de.RabenCode.pizzatime</ApplicationId>
+      <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-windows10.0.19041.0|AnyCPU'">
       <ApplicationId>de.RabenCode.pizzatime</ApplicationId>
+      <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <ItemGroup>

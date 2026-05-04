@@ -27,6 +27,17 @@
 <br />
 
 
+<h4>Anzahl Phasen</h4>
+<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+	<MudPaper Width="100px" Elevation=0 >
+		<MudTextField T="string" Text="@("Phasen")" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+	</MudPaper>
+	<MudPaper Width="60px" Elevation=0>
+		<MudNumericField T="int" @bind-Value="numberOfPhases" Underline="false" Variant="Variant.Text" Min="1" Max="4" />
+	</MudPaper>
+</MudStack>
+
+
 <h4>Alle Werte in Sekunden</h4>
 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
 	<MudPaper Width="100px" Elevation=0>
@@ -38,32 +49,50 @@
 </MudStack>
 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
 	<MudPaper Width="100px" Elevation=0>
-		<MudTextField T="string" Text="@("Zweiter Timer")" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+		<MudTextField T="string" Text="@("Zweiter Timer")" Disabled="isSecondPhaseDisabled" ReadOnly="true" Variant="Variant.Text" Underline="false" />
 	</MudPaper>
 	<MudPaper Width="60px" Elevation=0>
-		<MudNumericField T="int" @bind-Value="PizzaSettings.SecondTimer" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
+		<MudNumericField T="int" @bind-Value="PizzaSettings.SecondTimer" Disabled="isSecondPhaseDisabled" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
 	</MudPaper>
 </MudStack>
 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
 	<MudPaper Width="100px" Elevation=0>
-		<MudTextField T="string" Text="@("Dritter Timer")" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+		<MudTextField T="string" Text="@("Dritter Timer")" Disabled="isThirdPhaseDisabled" ReadOnly="true" Variant="Variant.Text" Underline="false" />
 	</MudPaper>
 	<MudPaper Width="60px" Elevation=0>
-		<MudNumericField T="int" @bind-Value="PizzaSettings.ThirdTimer" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
+		<MudNumericField T="int" @bind-Value="PizzaSettings.ThirdTimer" Disabled="isThirdPhaseDisabled" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
 	</MudPaper>
 </MudStack>
 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
 	<MudPaper Width="100px" Elevation=0>
-		<MudTextField T="string" Text="@("Vierter Timer")" ReadOnly="true" Variant="Variant.Text" Underline="false" />
+		<MudTextField T="string" Text="@("Vierter Timer")" Disabled="isFourthPhaseDisabled" ReadOnly="true" Variant="Variant.Text" Underline="false" />
 	</MudPaper>
 	<MudPaper Width="60px" Elevation=0>
-		<MudNumericField T="int" @bind-Value="PizzaSettings.FourthTimer" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
+		<MudNumericField T="int" @bind-Value="PizzaSettings.FourthTimer" Disabled="isFourthPhaseDisabled" Underline="false" Variant="Variant.Text" Min="0" Max="999" />
 	</MudPaper>
 </MudStack>
 
 @code
 {
 	private bool isTotalPizzasDisabled = true;
+
+	private int numberOfPhases
+	{
+		get
+		{
+			return PizzaSettings.NumberOfPhases;
+		}
+		set 
+		{ 
+			PizzaSettings.NumberOfPhases = value;
+			OnPhaseChange();
+		}
+	}
+
+	private bool isSecondPhaseDisabled = PizzaSettings.NumberOfPhases < 2;
+	private bool isThirdPhaseDisabled = PizzaSettings.NumberOfPhases < 3;
+	private bool isFourthPhaseDisabled = PizzaSettings.NumberOfPhases < 4;
+
 
 	private string lockIcon
 	{
@@ -80,6 +109,15 @@
 		}
 	}
 
+	void OnPhaseChange()
+	{
+		
+		isSecondPhaseDisabled = PizzaSettings.NumberOfPhases < 2;
+		isThirdPhaseDisabled = PizzaSettings.NumberOfPhases < 3;
+		isFourthPhaseDisabled = PizzaSettings.NumberOfPhases < 4;
+		StateHasChanged();
+	}
+	
 	void OnLock()
 	{
 		isTotalPizzasDisabled = !isTotalPizzasDisabled;
