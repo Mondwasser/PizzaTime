@@ -4,46 +4,59 @@ namespace PizzaTime.Models
 {
     internal class PizzaMediaPlayer
     {
-        private IAudioPlayer trackPlayer;
+        private IAudioPlayer _trackPlayer;
+
+        private PizzaMediaManager _mediaManager;
 
         public bool IsPlaying 
         { 
             get
             {
-                return trackPlayer.IsPlaying;
+                return _trackPlayer.IsPlaying;
             }
         }
+
         public double Volume
         {
             get
             {
-                return trackPlayer.Volume * 100;
+                return _trackPlayer.Volume * 100;
             }
 
             set
             {
                 if (value >= 0 && value <= 100)
                 {
-                    trackPlayer.Volume = value / 100;
+                    _trackPlayer.Volume = value / 100;
                 }
             }
         }
 
+        public PizzaMediaPlayer(PizzaMediaManager mediaManager)
+        {
+            _mediaManager = mediaManager;
+            _trackPlayer = AudioManager.Current.CreatePlayer(_mediaManager.LoadSelectedTrack());
+        }
+
+        public void UpdateTrack()
+        {
+            if (_trackPlayer.IsPlaying)
+            {
+                _trackPlayer.Stop();
+            }
+            _trackPlayer.Dispose();
+
+            _trackPlayer = AudioManager.Current.CreatePlayer(_mediaManager.LoadSelectedTrack());
+        }
+
         public void Play()
         {
-            trackPlayer.Play();
+            _trackPlayer.Play();
         }
 
         public void Stop()
         {
-            trackPlayer.Stop();
-        }
-
-        public PizzaMediaPlayer() 
-        {
-            IAudioManager manager = AudioManager.Current;
-            Stream track = FileSystem.OpenAppPackageFileAsync("tarantella-napoletana-164475.mp3").Result;
-            trackPlayer = manager.CreatePlayer(track);
+            _trackPlayer.Stop();
         }
     }
 }

@@ -1,11 +1,51 @@
-﻿@using PizzaTime.Models 
+﻿@using PizzaTime.Models
+@using PizzaTime.Enums
+@using System.Collections.ObjectModel
 
 @inject PizzaTimer timer
 @inject PizzaMediaPlayer player
+@inject PizzaMediaManager mediaManager
+@inject IDialogService DialogService
 
 @page "/settings"
 
 <h1>Settings</h1>
+<br />
+
+<h4>Alarmmusik wählen</h4>
+
+<MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+	<MudSelect @bind-Value="_selectedTrackName"
+			   MultiSelection="false"
+			   T="string"
+			   Variant="Variant.Outlined"
+			   SelectedValuesChanged="((IEnumerable<string> value) => OnSelectedTrackChanged(value))">
+		@foreach (var track in mediaManager.MediaFiles)
+		{
+			<MudSelectItem Value="@track.Key">@track.Key</MudSelectItem>
+		}
+	</MudSelect>
+</MudStack>
+
+<br />
+
+@if (!_isDownloading)
+{
+<MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+			<MudButton Variant="Variant.Filled"
+					   Color="Color.Primary"
+						   StartIcon="@Icons.Material.Filled.CloudUpload"
+						   OnClick="UploadFiles">
+				Upload Music
+			</MudButton>
+	<MudButton Variant="Variant.Filled" Disabled="@mediaManager.IsUsingStandardTrack" OnClick="DeleteFile" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete</MudButton>
+</MudStack>
+}
+else
+{
+	<MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+
 <br />
 
 <MudSlider Value="@player.Volume" T="double" Min="0.0" Max="100.0" ValueChanged="@((double value) => OnVolumeChange(value))" Size="Size.Large">Lautstärke</MudSlider>
@@ -20,7 +60,7 @@
 	<MudPaper Width="60px" Elevation=0>
 		<MudNumericField T="int" @bind-Value="PizzaSettings.AllTimeNumberOffPizzas" Underline="false" Disabled="isTotalPizzasDisabled" Variant="Variant.Text" Min="0" Max="999" />
 	</MudPaper>
-	<MudPaper Width="80px" Elevation=0/>
+	<MudPaper Width="80px" Elevation=0 />
 	<MudIconButton Variant="Variant.Filled" Icon="@lockIcon" OnClick="OnLock"></MudIconButton>
 </MudStack>
 
@@ -74,6 +114,8 @@
 
 @code
 {
+	private string _selectedTrackName;
+
 	private bool isTotalPizzasDisabled = true;
 
 	private int numberOfPhases
@@ -93,6 +135,8 @@
 	private bool isThirdPhaseDisabled = PizzaSettings.NumberOfPhases < 3;
 	private bool isFourthPhaseDisabled = PizzaSettings.NumberOfPhases < 4;
 
+
+	private bool _isDownloading = false;
 
 	private string lockIcon
 	{
@@ -124,6 +168,101 @@
 		StateHasChanged();
 	}
 
+	private async Task DeleteFile(MouseEventArgs e)
+	{
+		string songToDelete = _selectedTrackName;
+		mediaManager.SetSelectedTrackToStandard();
+		_selectedTrackName = mediaManager.GetSelectedTrackName();
+		OnSelectedTrackChanged(new List<string>() { _selectedTrackName });
+		mediaManager.RemoveMedia(songToDelete);
+		StateHasChanged();
+	}
+
+	private async Task UploadFiles()
+	{
+		var options = new PickOptions
+		{
+			PickerTitle = "MP3 auswählen",
+			FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+		{
+			{ DevicePlatform.WinUI, new[] { ".mp3" } },
+			{ DevicePlatform.Android, new[] { "audio/mpeg" } },
+			{ DevicePlatform.iOS, new[] { "public.mp3" } },
+			{ DevicePlatform.MacCatalyst, new[] { "public.mp3" } },
+		})
+		};
+
+		var pickedFile = await FilePicker.Default.PickAsync(options);
+		if (pickedFile == null)
+			return;
+
+		_isDownloading = true;
+		StateHasChanged();
+
+		// FileHandelingResult result = mediaManager.AddMedia(file).Result;
+
+		var result = mediaManager.AddMedia(pickedFile.FullPath);
+
+		_isDownloading = false;
+		StateHasChanged();
+
+		if (result == FileHandelingResult.Success)
+		{
+			string name = Path.GetFileNameWithoutExtension(pickedFile.FullPath);
+			_selectedTrackName = name;
+			OnSelectedTrackChanged(new List<string>() { name });
+			DialogService.ShowMessageBox(
+			"Erfolg",
+			"Neues Lied erfolgreich hochgeladen",
+			yesText: "Cool!");
+
+			StateHasChanged();
+		}
+		else
+		{
+			string message = null;
+
+			switch (result)
+			{
+				case FileHandelingResult.InvalidFileFormat:
+					message = "Ungültiger Dateityp. Bitte laden Sie eine gültige mp3-Audiodatei hoch.";
+					break;
+				case FileHandelingResult.FileAlreadyExists:
+					message = "Die Datei existiert bereits. Bitte löschen sie die Datei bevor sie es erneut versuchen.";
+					break;
+				case FileHandelingResult.UnknownError:
+					message = "Ein unbekannter Fehler ist aufgetreten. Bitte kontaktieren sie ihren Entwickler.";
+					break;
+				case FileHandelingResult.FileSizeExceedsLimit:
+					message = "Die Datei ist zu groß um sie zu speichern. Bitte wählen sie etwas Kleineres.";
+					break;
+				case FileHandelingResult.TooManyTracks:
+					message = "Zu viele Tracks bereits gespeichert. Bitte löschen sie ein paar und versuchens sie es erneut.";
+					break;
+				default:
+					message = "Ich habe keine Ahnung, was passiert ist. Am besten dem Entwickler Bescheid geben.";
+					break;
+			}
+
+
+			DialogService.ShowMessageBox(
+			"Misserfolg",
+			message,
+			yesText: "Nicht Cool!");
+		}
+	}
+
+	private void OnSelectedTrackChanged(IEnumerable<string> value)
+	{
+		if (value == null || !value.Any())
+		{
+			return;
+		}
+
+		mediaManager.SetSelectedTrack(value.FirstOrDefault());
+		player.UpdateTrack();
+	}
+
 	private void OnVolumeChange(double value)
 	{
 		player.Volume = value;
@@ -137,6 +276,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
+		_selectedTrackName = mediaManager.GetSelectedTrackName();
 		timer.StopCommand.Execute(null);
 		player.Stop();
 	}
